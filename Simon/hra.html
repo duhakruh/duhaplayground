@@ -16,7 +16,7 @@
 	var canvas = document.getElementById("myCanvas");
 	var ctx = canvas.getContext("2d");
 	
-	ctx.beginPath();
+	/*ctx.beginPath();
     ctx.rect(245, 120, 70, 75);
     ctx.fillStyle = "#00AABB";
     ctx.fill();
@@ -32,7 +32,29 @@
     ctx.rect(220, 140, 100, 40);
     ctx.strokeStyle = "rgba(0, 0, 255, 0.5)";
     ctx.stroke();
-    ctx.closePath();
+    ctx.closePath();*/
+    
+    var x = canvas.width/2;
+    var y = canvas.height-30;
+    var dx = -2;
+    var dy = -1;
+    
+    function drawBall() {
+       ctx.beginPath();
+        ctx.arc(x, y, 10, 0, Math.PI*2);
+        ctx.fillStyle = "#0095DD";
+        ctx.fill();
+        ctx.closePath(); 
+    }
+    
+    function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawBall();
+        x += dx;
+        y += dy;
+    }
+    setInterval(draw, 30);
+    
 </script>
 
 </body>
