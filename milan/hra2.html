@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+    <title>Gamedev Canvas Workshop</title>
+    <style>
+    	* { padding: 0; margin: 10; }
+    	canvas { background: #eee; display: block; margin: 0 auto; }
+    </style>
+</head>
+<body>
+    <canvas id="myCanvas" width="480" height="320"></canvas>
+<script>
+    // ctx.beginPath();
+    // ctx.rect(240, 160, 50, 50);
+    // ctx.fillStyle = "#FF00FF";
+    // ctx.fill();
+    // ctx.closePath();
+    
+    // ctx.beginPath();
+    // ctx.arc(240, 160, 20*2, 0, Math.PI*2, true);
+    // ctx.fillStyle = "rgba(0, 0, 255, 0.5)";
+    // ctx.fill();
+    // ctx.closePath();
+    
+    // ctx.beginPath();
+    // ctx.rect(160, 10, 100, 40);
+    // ctx.strokeStyle = "rgba(0, 0, 255, 0.5)";
+    // ctx.stroke();
+    // ctx.closePath();
+    
+    var canvas = document.getElementById("myCanvas"); //vytvoření plátna
+    var ctx = canvas.getContext("2d"); //vytvoření kontextu pro kreslení na plátně
+
+    var x = canvas.width/2; //nastavení startovní souřadnice x míčku
+    var y = canvas.height-30; //nastavení startovní souřadnice y míčku
+    var dx = -4; //nastavení rychlosti míčku po ose x
+    var dy = -2; //nastavení rychlosti míčku po ose y
+    
+    //fce pro nakreslení míčku
+    function drawBall() {
+        ctx.beginPath();
+        ctx.arc(x, y, 10, 0, Math.PI*2);
+        ctx.fillStyle = "#0095DD";
+        ctx.fill();
+        ctx.closePath();
+    }
+    
+    function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height); //vyčisti plátno
+        drawBall(); //nakresli míček
+        x += dx; //změň souřadnice x
+        y += dy; //změň souřadnice y
+    }
+    
+    setInterval(draw, 10); //smyčka po 10ms
+</script>
+
+</body>
+</html>

@@ -1,83 +1,72 @@
-    <!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
     <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
     <title>Gamedev Canvas Workshop</title>
     <style>
-    	/** { padding: 0; margin: 10; }*/
-    	/*canvas { background: #eee; display: block; margin: 0 auto; }*/
-    	canvas { background: #eee; display: block; }
+    	* { padding: 0; margin: 10; }
+    	#myCanvas { background: #eee; display: block; margin: 0 auto; }
+    	#viewport { background: red; display: block; margin: 0 auto; }
     </style>
 </head>
 <body>
 
-<canvas id="myCanvas" width="1200" height="320"></canvas>
+
+    <canvas id="myCanvas" width="480" height="320"></canvas>
+    <canvas id="viewport" width="1200" height="720"></canvas>
+    
+    
+
+
 
 <script>
-    var el=$("#myCanvas");
-    //el.css('margin-left','50 px');
-    el.css('width',window.innerWidth/2);
-    el.css('height',window.innerHeight/2);
-
-
     var canvas = document.getElementById("myCanvas");
     var ctx = canvas.getContext("2d");
 
+    var canvas1 = document.getElementById('viewport'),
+    context = canvas1.getContext('2d');
+    
+    make_base();
+    
+    
+    var c1 = $('#c1');
     
 
-    //document.getElementById("myCanvas" ).style.margin = 100;
+function make_base()
+{
+    var base_image = new Image();
+    base_image.src = 'img/download.jpg';
+    base_image.onload = function(){
+    ctx.drawImage(base_image, 100, 100);
+  }
+}
 
-	
-    
-    // ctx.beginPath();
-    // ctx.rect(240, 160, 50, 50);
-    // ctx.fillStyle = "#FF00FF";
-    // ctx.fill();
-    // ctx.closePath();
-    
-    // ctx.beginPath();
-    // ctx.arc(240, 160, 20*2, 0, Math.PI*2, true);
-    // ctx.fillStyle = "rgba(0, 0, 255, 0.5)";
-    // ctx.fill();
-    // ctx.closePath();
-    
-    // ctx.beginPath();
-    // ctx.rect(160, 10, 100, 40);
-    // ctx.strokeStyle = "rgba(0, 0, 255, 0.5)";
-    // ctx.stroke();
-    // ctx.closePath();
-    
-    //uprava css
-    
+
+
+
     
     var x = canvas.width/2;
     var y = canvas.height-30;
     var dx = -4;
     var dy = -2;
     
-    
-    var w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
-    var h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
-    
-    //alert(screen.height);
-    alert(window.innerHeight + " " + window.innerWidth);
-
-    setInterval(draw, 100);
-    
-    function draw() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    function drawBall() {
         ctx.beginPath();
         ctx.arc(x, y, 10, 0, Math.PI*2);
         ctx.fillStyle = "#0095DD";
         ctx.fill();
         ctx.closePath();
+    }
+    
+    function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawBall();
         x += dx; 
         y += dy;
     }
     
-    
-    
+    setInterval(draw, 10);
 </script>
 
 </body>
