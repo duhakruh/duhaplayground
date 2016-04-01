@@ -15,10 +15,11 @@
 <script>
 	var canvas = document.getElementById("myCanvas");
     var ctx = canvas.getContext("2d");
-    var r;
-    var g;
-    var b;
+   
     var colorR;
+    var colorR1;
+    var colorR2;
+
     function getRandomInt(min, max) {
         return Math.floor(Math.random() * (max - min + 1)) + min;
     }
@@ -52,7 +53,7 @@
     function drawBall() {
         ctx.beginPath();
         ctx.arc(x, y, ballRadius, 0, Math.PI*2);
-        ctx.fillStyle = "rgb(" + colorR + ", 102, 102)";
+        ctx.fillStyle = "rgb(" + colorR + "," + colorR1 + "," + colorR2 + ")";
         ctx.fill();
         ctx.closePath();
     }
@@ -65,10 +66,14 @@
         if(x + dx > canvas.width-ballRadius || x + dx < ballRadius) {
             dx = -dx;
             colorR = getRandomInt(0,255);
+            colorR1 = getRandomInt(0,255);
+            colorR2 = getRandomInt(0,255);
         }
         if(y + dy > canvas.height-ballRadius || y + dy < ballRadius) {
             dy = -dy;
             colorR = getRandomInt(0,255);
+            colorR1 = getRandomInt(0,255);
+            colorR2 = getRandomInt(0,255);
         }
         
         x += dx; //změň souřadnice x míčku
