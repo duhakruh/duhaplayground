@@ -15,6 +15,7 @@ function drawBall() {
     ctx.beginPath();
     ctx.arc(x, y, ballRadius, 0, Math.PI*2);
     ctx.fillStyle = "rgb(" + colorR + ", 102, 102)";
+    //ctx.fillStyle = "rgb(0, 102, 255)";
     ctx.fill();
     ctx.closePath();
 }

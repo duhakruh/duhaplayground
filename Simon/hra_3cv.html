@@ -39,11 +39,12 @@
     var dx = -3;
     var dy = -2;
     var ballRadius = 10;
+    var colorR = 0;
     
     function drawBall() {
        ctx.beginPath();
         ctx.arc(x, y, ballRadius, 0, Math.PI*2);
-        ctx.fillStyle = "#BABABA";
+        ctx.fillStyle = "rgb(" + colorR + ",186 ,186)";
         ctx.fill();
         ctx.closePath(); 
     }
@@ -55,14 +56,22 @@
         y += dy;
         
         if(x + dx > canvas.width - ballRadius || x + dx < ballRadius) {
-            dx = -dx
+            dx = -dx;
+            colorR = getRandomInt(0,255);
+            
         }
         
         if(y + dy > canvas.height - ballRadius || y + dy < ballRadius) {
-            dy = -dy
+            dy = -dy;
+            colorR = getRandomInt(0,255);
         }
     }
     setInterval(draw, 30);
+    
+    function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+    
     
 </script>
 

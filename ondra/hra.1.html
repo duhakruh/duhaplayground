@@ -22,13 +22,13 @@
     var dy = -1;
     var ballRadius = 10;
 
-    setInterval(draw, 10);
+    setInterval(draw, 1);
     
     function draw() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        //ctx.clearRect(0, 0, canvas.width, canvas.height);
         drawBall();
         
-        //odraz od zdi
+        
         if(x + dx > canvas.width-ballRadius || x + dx < ballRadius) {
             dx = -dx;
         }
@@ -40,19 +40,17 @@
         y += dy;
     }
     
-
-
-
-
-    function drawBall () {
+    function getRandomInt(0, 255){
+    return Math.floor(Math.random() * (255 - 1 + 1)) + 1;
+    
+    function drawBall() {
     ctx.beginPath();
-    ctx.arc(x, y, 10, 0, ballRadius);
-    ctx.fillStyle = "FDFCFC";
+    ctx.arc(x, y, ballRadius, 0, Math.PI*2);
+    
+    ctx.fillStyle = "rgb(10, 18, 1)";
     ctx.fill();
     ctx.closePath();
     }
-    
-   
 </script>
 
 </body>

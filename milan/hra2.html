@@ -38,6 +38,8 @@
     var dx = -4; //nastavení rychlosti míčku po ose x
     var dy = -2; //nastavení rychlosti míčku po ose y
     
+    setInterval(draw, 10); //smyčka po 10ms
+    
     //fce pro nakreslení míčku
     function drawBall() {
         ctx.beginPath();
@@ -54,7 +56,7 @@
         y += dy; //změň souřadnice y
     }
     
-    setInterval(draw, 10); //smyčka po 10ms
+    
 </script>
 
 </body>
