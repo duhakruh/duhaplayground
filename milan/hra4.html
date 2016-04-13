@@ -15,8 +15,10 @@
     //https://developer.mozilla.org/en-US/docs/Games/Tutorials/2D_Breakout_game_pure_JavaScript
 
     var canvas = document.getElementById("myCanvas"); //vytvoření plátna
+
     var ctx = canvas.getContext("2d"); //vytvoření kontextu pro kreslení na plátně
 
+    //deklarace a nastavení všech potřebných proměnných
     var x = canvas.width/2; //nastavení startovní souřadnice x míčku
     var y = canvas.height-30; //nastavení startovní souřadnice y míčku
     var dx = -1; //nastavení rychlosti míčku po ose x
@@ -30,9 +32,9 @@
     var rightPressed = false; //výchozí stav klávesy pravé šipka 
     var leftPressed = false; //výchozí stav klávesy levá šipka
     
-    setInterval(draw, 10); //smyčka po 10ms
-    document.addEventListener("keydown", keyDownHandler, false);
-    document.addEventListener("keyup", keyUpHandler, false);
+    setInterval(draw, 10); //nastavení zachytávače události uplynutí 10ms
+    document.addEventListener("keydown", keyDownHandler, false); //nastavení zachytávače události klávesa je stisknuta
+    document.addEventListener("keyup", keyUpHandler, false); //nastavení zachytávače události klávesa je uvolněna
     
     //fce pro nakreslení míčku
     function drawBall() {
@@ -65,9 +67,12 @@
             dy = -dy;
         }
         
+        //změň souřadnice  míčku x, y
         x += dx; //změň souřadnice x míčku
         y += dy; //změň souřadnice y míčku
         
+        
+        //změň souřadnici x pálky
         if(rightPressed && paddleX < canvas.width-paddleWidth) {
             paddleX += 7;
         }
@@ -77,19 +82,20 @@
     }
     
     function keyDownHandler(e) {
-        if(e.keyCode == 68) {
+        if(e.keyCode == 39) {
+            //console.log(Date.now() + "dole");
             rightPressed = true;
         }
-        else if(e.keyCode == 65) {
+        else if(e.keyCode == 37) {
             leftPressed = true;
         }
     }
 
     function keyUpHandler(e) {
-        if(e.keyCode == 68) {
+        if(e.keyCode == 39) {
             rightPressed = false;
         }
-        else if(e.keyCode == 65) {
+        else if(e.keyCode == 37) {
             leftPressed = false;
         }
     }
