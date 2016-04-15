@@ -41,7 +41,7 @@
     var dx = -1; //nastavení rychlosti míčku po ose x
     var dy = -1; //nastavení rychlosti míčku po ose y
     var ballRadius = 10; //deklarace proměnné pro poloměr míčku
-    var paddleHeight = 10; //výška pálky
+    var paddleHeight = 25; //výška pálky
     var paddleWidth = 75; // šířka pálky
     var paddleX = (canvas.width-paddleWidth)/2;//počáteční poloha pálky na ose X
     var rightPressed = false; // výchozí stav pravé šipky
@@ -73,43 +73,54 @@
         ctx.clearRect(0, 0, canvas.width, canvas.height); //vyčisti plátno
         drawBall(); //nakresli míček
         drawPaddle();
-        
-        
-        //odraz míčku od stěny
+        //odraz míčku od bočních stěn
         if(x + dx > canvas.width-ballRadius || x + dx < ballRadius) {
             dx = -dx;
         }
-        if(y + dy > canvas.height-ballRadius || y + dy < ballRadius) {
+        
+        //odraz od horní stěny
+        if(y + dy < ballRadius) {
             dy = -dy;
         }
         
+        if ((y + dy > canvas.height - paddleHeight - ballRadius) && (x > paddleX && x < paddleWidth + paddleX)) {
+            
+            dy = -dy;
+        }     
+        
+        if ((y + dy > canvas.height - ballRadius) && (x < paddleX || x > paddleWidth + paddleX)){
+            
+            alert ("KONEC HRY!");
+            document.location.reload();
+        }
+                
+                
         x += dx; //změň souřadnice x míčku
         y += dy; //změň souřadnice y míčku
-        
+    
         if(rightPressed && paddleX < canvas.width-paddleWidth) {
             paddleX += 2;
         }
         else if(leftPressed && paddleX > 0) {
             paddleX -= 2;
         }
-        
-        
+            
     }
     
     function keyDownHandler(e) {
-        if(e.keyCode == 68) {
+        if(e.keyCode == 39) {
             rightPressed = true;
         }
-        else if(e.keyCode == 65) {
+        else if(e.keyCode == 37) {
             leftPressed = true;
         }
     }
 
     function keyUpHandler(e) {
-        if(e.keyCode == 68) {
+        if(e.keyCode == 39) {
             rightPressed = false;
         }
-        else if(e.keyCode == 65) {
+        else if(e.keyCode == 37) {
             leftPressed = false;
         }
     }

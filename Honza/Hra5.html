@@ -18,8 +18,8 @@
     var ctx = canvas.getContext("2d");
     var x = canvas.width/2;
     var y = canvas.height-30;
-    var dx = 2;
-    var dy = -2;
+    var dx = 1;
+    var dy = -1;
     var ballRadius = 10;
     var paddleHeight = 10;
     var paddleWidth = 75;
@@ -55,10 +55,21 @@
         
         x += dx;
         y += dy;
-        //odraz míčku od stěny
-        if (y + dy > canvas.height - ballRadius || y + dy < ballRadius) {
+        
+        if (y + dy < ballRadius) {
             dy = -dy;
         }
+        
+        else if (y + dy > canvas.height - ballRadius) {
+            if (x > paddleX && x < paddleX + paddleWidth) {
+               dy = -dy; 
+            }
+            else{
+            alert("Game Over");
+            document.location.reload();
+            }
+        }
+        
         if(x + dx > canvas.width - ballRadius || x + dx < ballRadius) {
             dx = -dx;
         }
@@ -72,19 +83,19 @@
     }
     
     function keyDownHandler(e) {
-        if(e.keyCode == 68) {
+        if(e.keyCode == 39) {
             rightPressed = true;
         }
-        else if(e.keyCode == 65) {
+        else if(e.keyCode == 37) {
             leftPressed = true;
         }
     }
 
     function keyUpHandler(e) {
-        if(e.keyCode == 68) {
+        if(e.keyCode == 39) {
             rightPressed = false;
         }
-        else if(e.keyCode == 65) {
+        else if(e.keyCode == 37) {
             leftPressed = false;
         }
     }
