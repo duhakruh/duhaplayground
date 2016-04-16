@@ -1,55 +1,185 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <meta charset="utf-8" />
-    <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
-    <title>Gamedev Canvas Workshop</title>
-    <style>
-    	* { padding: 0; margin: 10; }
-    	canvas { background: #088A4B; display: block; margin: 0 auto; }
-    </style>
-</head>
-<body>
-    <canvas id="myCanvas" width="480" height="320"></canvas>
-<script>
-    //https://developer.mozilla.org/en-US/docs/Games/Tutorials/2D_Breakout_game_pure_JavaScript
-
-    var canvas = document.getElementById("myCanvas"); //vytvoření plátna
-    var ctx = canvas.getContext("2d"); //vytvoření kontextu pro kreslení na plátně
-
-    var x = canvas.width/2; //nastavení startovní souřadnice x míčku
-    var y = canvas.height-30; //nastavení startovní souřadnice y míčku
-    var dx = -1; //nastavení rychlosti míčku po ose x
-    var dy = -1; //nastavení rychlosti míčku po ose y
-    var ballRadius = 10; //deklarace proměnné pro poloměr míčku
-    
-    //fce pro nakreslení míčku
-    function drawBall() {
-        ctx.beginPath();
-        ctx.arc(x, y, ballRadius, 0, Math.PI*2);
-        ctx.fillStyle = "rgb(255,255,255)";
-        ctx.fill();
-        ctx.closePath();
-    }
-    
-    function draw() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height); //vyčisti plátno
-        drawBall(); //nakresli míček
+    <head>
+        <meta charset="utf-8" />
+        <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+        <title>Gamedev Canvas Workshop</title>
+        <style>
+        	* { padding: 0; margin: 10; }
+        	canvas { background: #088A4B; display: block; margin: 0 auto; }
+        </style>
+    </head>
+    <body>
+        hru odstartuješ klávesou N. Ovládání pálky spodního hráče šipkami vlevo,vpravo. Ovládání pálky horního hráče klávesami A,D
+        <canvas id="myCanvas" width="480" height="600"></canvas>
+        <script>
+            //https://developer.mozilla.org/en-US/docs/Games/Tutorials/2D_Breakout_game_pure_JavaScript
         
-        //odraz míčku od stěny
-        if(x + dx > canvas.width-ballRadius || x + dx < ballRadius) {
-            dx = -dx;
-        }
-        if(y + dy > canvas.height-ballRadius || y + dy < ballRadius) {
-            dy = -dy;
-        }
+            var canvas = document.getElementById("myCanvas"); //vytvoření plátna
         
-        x += dx; //změň souřadnice x míčku
-        y += dy; //změň souřadnice y míčku
-    }
-    
-    setInterval(draw, 10); //smyčka po 10ms
-</script>
-
-</body>
+            var ctx = canvas.getContext("2d"); //vytvoření kontextu pro kreslení na plátně
+        
+            //deklarace a nastavení všech potřebných proměnných
+            var x = canvas.width/2; //nastavení startovní souřadnice x míčku
+            var y = canvas.height-30; //nastavení startovní souřadnice y míčku
+            var dx = -1; //nastavení rychlosti míčku po ose x
+            var dy = -1; //nastavení rychlosti míčku po ose y
+            var ballRadius = 10; //deklarace proměnné pro poloměr míčku
+            
+            var paddleHeight = 20; //výška pálky
+            var paddleWidth = 75; //šířka pálky
+            var paddleX = (canvas.width-paddleWidth)/2; //počáteční poloha pálky na ose X
+            var paddle2X = (canvas.width-paddleWidth)/2; //počáteční poloha 2.pálky na ose X
+            
+            var rightPressed = false; //výchozí stav klávesy pravé šipka 
+            var leftPressed = false; //výchozí stav klávesy levá šipka
+            var rightPressed2 = false; //výchozí stav klávesy pravé šipka 
+            var leftPressed2 = false; //výchozí stav klávesy levá šipka
+            
+            
+            document.addEventListener("keydown", keyDownHandler, false); //nastavení zachytávače události klávesa je stisknuta
+            document.addEventListener("keyup", keyUpHandler, false); //nastavení zachytávače události klávesa je uvolněna
+            
+            
+            
+            
+            //fce pro nakreslení míčku
+            function drawBall() {
+                ctx.beginPath();
+                ctx.arc(x, y, ballRadius, 0, Math.PI*2);
+                ctx.fillStyle = "rgb(255,255,255)";
+                ctx.fill();
+                ctx.closePath();
+            }
+            
+            function drawPaddle() {
+                ctx.beginPath();
+                ctx.rect(paddleX, canvas.height-paddleHeight, paddleWidth, paddleHeight);
+                ctx.fillStyle = "#0095DD";
+                ctx.fill();
+                ctx.closePath();
+            }
+            
+            function drawPaddle2() {
+                ctx.beginPath();
+                ctx.rect(paddle2X, 0, paddleWidth, paddleHeight);
+                ctx.fillStyle = "#0095DD";
+                ctx.fill();
+                ctx.closePath();
+            }
+            
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height); //vyčisti plátno
+                drawBall(); //nakresli míček
+                
+                drawPaddle(); //nakresli pálku
+                drawPaddle2(); //nakresli pálku 2
+                
+                //odraz míčku od bočních
+                if(x + dx > canvas.width-ballRadius || x + dx < ballRadius) {
+                    dx = -dx;
+                }
+                
+                
+                //odraz na horní straně
+                if ((y + dy < ballRadius + paddleHeight) && (x > paddle2X && x < paddle2X + paddleWidth)) {
+                    dy = -dy;
+                    if (dy > 0)
+                    {
+                        dy += 1;
+                    }
+                    else
+                    {
+                        dy -= 1;
+                    }
+                }
+                else if (y + dy < ballRadius) {
+                    alert("konec hry hráč 2 prohrál");
+                    document.location.reload();
+                }
+                
+                //odraz na spodní straně
+                else if ((y + dy > canvas.height - ballRadius - paddleHeight) && (x > paddleX && x < paddleX + paddleWidth))
+                {
+                    dy = -dy;
+                    if (dy > 0)
+                    {
+                        dy += 1;
+                    }
+                    else
+                    {
+                        dy -= 1;
+                    }
+                }
+                //pálka tam není
+                else if (y + dy > canvas.height - ballRadius)
+                {
+                    alert("konec hry hráč 1 prohrál");
+                    document.location.reload();
+                }
+                
+               
+                
+                //změň souřadnice  míčku x, y
+                x += dx; //změň souřadnice x míčku
+                y += dy; //změň souřadnice y míčku
+                
+                
+                //změň souřadnici x pálky
+                if(rightPressed && paddleX < canvas.width-paddleWidth) {
+                    paddleX += 7;
+                }
+                else if(leftPressed && paddleX > 0) {
+                    paddleX -= 7;
+                }
+                
+                //změň souřadnici x pálky 2
+                if(rightPressed2 && paddle2X < canvas.width-paddleWidth) {
+                    paddle2X += 7;
+                }
+                else if(leftPressed2 && paddle2X > 0) {
+                    paddle2X -= 7;
+                }
+            }
+            
+            function keyDownHandler(e) {
+                if(e.keyCode == 39) { //right arrow
+                    rightPressed = true;
+                }
+                else if(e.keyCode == 37) { //left arrow
+                    leftPressed = true;
+                }
+                
+                //2.palka
+                if(e.keyCode == 68) { // D
+                    rightPressed2 = true;
+                }
+                else if(e.keyCode == 65) { //A
+                    leftPressed2 = true;
+                }
+                
+                //start hry klávesou N
+                if(e.keyCode == 78) { // N
+                    setInterval(draw, 10); //nastavení zachytávače události uplynutí 10ms
+                }
+            }
+        
+            function keyUpHandler(e) {
+                if(e.keyCode == 39) {
+                    rightPressed = false;
+                }
+                else if(e.keyCode == 37) {
+                    leftPressed = false;
+                }
+                
+                //2.palka
+                if(e.keyCode == 68) {
+                    rightPressed2 = false;
+                }
+                else if(e.keyCode == 65) {
+                    leftPressed2 = false;
+                }
+            }
+        </script>
+    </body>
 </html>
