@@ -244,6 +244,7 @@
                 
                 //start hry klávesou N
                 if(e.keyCode == 78) { // N
+                    clearInterval(interval);
                     interval = setInterval(draw, 10); //nastavení zachytávače události uplynutí 10ms
                 }
                 
