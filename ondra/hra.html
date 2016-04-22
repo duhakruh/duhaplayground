@@ -35,7 +35,7 @@
     var aPressed = false;//výchozí stav klávesy A
     var dPressed = false;//výchozí stav klávesy D
     
-    setInterval(draw, 10); //nastavení zachytávače události uplynutí 10ms
+    var interval = setInterval(draw, 10); //nastavení zachytávače události uplynutí 10ms
     document.addEventListener("keydown", keyDownHandler, false); //nastavení zachytávače události klávesa je stisknuta
     document.addEventListener("keyup", keyUpHandler, false); //nastavení zachytávače události klávesa je uvolněna
     
@@ -88,6 +88,7 @@
         //pálka tam není
         else if (y + dy > canvas.height - ballRadius)
         {
+            clearInterval(interval);
             alert("konec hry");
             //document.location.reload();
         }
@@ -101,6 +102,7 @@
         //horní pálka tam není
         else if (y + dy < ballRadius)
         {
+            clearInterval(interval);
             alert("konec hry");
             //document.location.reload();
         }
