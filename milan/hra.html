@@ -157,12 +157,12 @@
                     clearInterval(interval);
                     drawGameOver();
                 }
-                
+            
                 
                 //změň souřadnice  míčku x, y
                 x += dx; //změň souřadnice x míčku
                 y += dy; //změň souřadnice y míčku
-                
+                requestAnimationFrame(draw);
                 
                 //změň souřadnici x pálky
                 if(rightPressed && paddleX < canvas.width-paddleWidth) {

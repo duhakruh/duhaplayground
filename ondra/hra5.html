@@ -28,12 +28,9 @@
     var paddleHeight = 20; //výška pálky
     var paddleWidth = 75; //šířka pálky
     var paddleX = (canvas.width-paddleWidth)/2; //počáteční poloha pálky na ose X
-    var paddleX2 = (canvas.width-paddleWidth)/2; //počáteční poloha 2. pálky na ose X
     
     var rightPressed = false; //výchozí stav klávesy pravé šipka 
     var leftPressed = false; //výchozí stav klávesy levá šipka
-    var aPressed = false;//výchozí stav klávesy A
-    var dPressed = false;//výchozí stav klávesy D
     
     setInterval(draw, 10); //nastavení zachytávače události uplynutí 10ms
     document.addEventListener("keydown", keyDownHandler, false); //nastavení zachytávače události klávesa je stisknuta
@@ -55,33 +52,24 @@
         ctx.fill();
         ctx.closePath();
     }
-    function drawPaddle2() {
-        ctx.beginPath();
-        ctx.rect(paddleX2, 0, paddleWidth, paddleHeight);
-        ctx.fillStyle = "#0832DB";
-        ctx.fill();
-        ctx.closePath();
-    }
+    
     function draw() {
         ctx.clearRect(0, 0, canvas.width, canvas.height); //vyčisti plátno
         drawBall(); //nakresli míček
         
         drawPaddle(); //nakresli pálku
-        drawPaddle2(); //nakresli 2. pálku
         
         //odraz míčku od bočních
         if(x + dx > canvas.width-ballRadius || x + dx < ballRadius) {
             dx = -dx;
         }
-        
-        // //odraz od horní stěny
-        // if(y + dy < ballRadius) {
-        //     dy = -dy;
-        // }
-        //odraz od dolní pálky
+        //odraz od horní stěny
+        if(y + dy < ballRadius) {
+            dy = -dy;
+        }
+        //odraz od pálky
         else if ((y + dy > canvas.height - ballRadius - paddleHeight) && (x > paddleX && x < paddleX + paddleWidth))
         {
-        
             //normální odraz
             dy = -dy;
         }
@@ -89,21 +77,9 @@
         else if (y + dy > canvas.height - ballRadius)
         {
             alert("konec hry");
-            //document.location.reload();
+            document.location.reload();
         }
-        //odraz od horní pálky
-        if ((y + dy < ballRadius + paddleHeight) && (x > paddleX2 && x < paddleX2 + paddleWidth))
-        {
         
-            //normální odraz
-            dy = -dy;
-        }
-        //horní pálka tam není
-        else if (y + dy < ballRadius)
-        {
-            alert("konec hry");
-            //document.location.reload();
-        }
        
         
         //změň souřadnice  míčku x, y
@@ -118,15 +94,6 @@
         else if(leftPressed && paddleX > 0) {
             paddleX -= 7;
         }
-    
-    
-        //změň souřadnici x pálky
-        if(dPressed && paddleX2 < canvas.width-paddleWidth) {
-            paddleX2 += 7;
-        }
-        else if(aPressed && paddleX2 > 0) {
-            paddleX2 -= 7;
-        }
     }
     
     function keyDownHandler(e) {
@@ -137,12 +104,6 @@
         else if(e.keyCode == 37) {
             leftPressed = true;
         }
-        if(e.keyCode == 68){
-            dPressed = true;
-        }
-        else if(e.keyCode == 65){
-            aPressed = true;
-        }
     }
 
     function keyUpHandler(e) {
@@ -151,12 +112,6 @@
         }
         else if(e.keyCode == 37) {
             leftPressed = false;
-        }
-         if(e.keyCode == 68) {
-            dPressed = false;
-        }
-        else if(e.keyCode == 65) {
-            aPressed = false;
         }
     }
     
