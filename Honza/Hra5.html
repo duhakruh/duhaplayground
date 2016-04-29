@@ -4,82 +4,153 @@
     <meta charset="utf-8" />
     <title>Gamedev Canvas Workshop</title>
     <style>
-        
     	* { padding: 0; margin: 0; }
-    	canvas { background: blue; display: block; margin: 0 auto; }
+    	canvas { background: #3A7833; display: block; margin: 0 auto; }
     </style>
 </head>
 <body>
 
-<canvas id="myCanvas" width="480" height="320"></canvas>
+<canvas id="myCanvas" width="480" height="620"></canvas>
 
 <script>
-    var canvas = document.getElementById("myCanvas");
+	var canvas = document.getElementById("myCanvas");
     var ctx = canvas.getContext("2d");
-    var x = canvas.width/2;
-    var y = canvas.height-30;
-    var dx = 1;
-    var dy = -1;
-    var ballRadius = 10;
-    var paddleHeight = 10;
-    var paddleWidth = 75;
-    var paddleX = (canvas.width-paddleWidth)/2;
-    var rightPressed = false;
-    var leftPressed = false;
+   
+    canvas = document.getElementById("myCanvas"); //vytvoření plátna
+    ctx = canvas.getContext("2d"); //vytvoření kontextu pro kreslení na plátně
+
+    var x = canvas.width/2; //nastavení startovní souřadnice x míčku
+    var y = canvas.height-30; //nastavení startovní souřadnice y míčku
+    var dx = -0.5; //nastavení rychlosti míčku po ose x
+    var dy = -0.5; //nastavení rychlosti míčku po ose y
+    var ballRadius = 10; //deklarace proměnné pro poloměr míčku
     
-    setInterval(draw, 10);
+    var paddleHeight = 10; //výška pálky
+    var paddleWidth = 75; // šířka pálky
+    var paddleX = (canvas.width-paddleWidth)/2;//počáteční poloha pálky1 na ose X
+    var paddleX2 = (canvas.width-paddleWidth)/2;//počáteční poloha pálky2 na ose X
+    
+    var rightPressed = false; // výchozí stav pravé šipky
+    var leftPressed = false; // výchozí stav levé šipky
+    
+    var rightPressed2 = false; // výchozí stav d
+    var leftPressed2 = false; // výchozí stav a
+    
+    var mezera = false; // výchozí stav mezery
+    
+    var zrychleni = 0.3;
+    
+    var interval; //smyčka po 10ms
+    
     document.addEventListener("keydown", keyDownHandler, false);
     document.addEventListener("keyup", keyUpHandler, false);
     
+    drawsg();
+    
+    function drawsg() {
+        ctx.font = "30px Arial";
+        ctx.fillText("click N to start game",10,50);
+    }
+    
+    //fce pro nakreslení míčku
     function drawBall() {
         ctx.beginPath();
         ctx.arc(x, y, ballRadius, 0, Math.PI*2);
+        ctx.fillStyle = "white";
+        ctx.fill();
+        ctx.closePath();
+    }
+    
+    
+    //fce pro nakreslení pálky
+    function drawPaddle() {
+        ctx.beginPath();
+        ctx.rect(paddleX, canvas.height-paddleHeight, paddleWidth, paddleHeight);
         ctx.fillStyle = "#0095DD";
         ctx.fill();
         ctx.closePath();
     }
     
-    function drawPaddle() {
+    //fce pro nakreslení pálky
+    function drawPaddle2() {
         ctx.beginPath();
-        ctx.rect(paddleX, canvas.height-paddleHeight, paddleWidth, paddleHeight);
-        ctx.fillStyle = "green";
+        ctx.rect(paddleX2, canvas.height-canvas.height, paddleWidth, paddleHeight);
+        ctx.fillStyle = "#0095DD";
         ctx.fill();
         ctx.closePath();
     }
     
+    //fce pro 
     function draw() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        
-        drawBall();
+        ctx.clearRect(0, 0, canvas.width, canvas.height); //vyčisti plátno
+        drawBall(); //nakresli míček
         drawPaddle();
-        
-        x += dx;
-        y += dy;
-        
-        if (y + dy < ballRadius) {
-            dy = -dy;
-        }
-        
-        else if (y + dy > canvas.height - ballRadius) {
-            if (x > paddleX && x < paddleX + paddleWidth) {
-               dy = -dy; 
-            }
-            else{
-            alert("Game Over");
-            document.location.reload();
-            }
-        }
-        
-        if(x + dx > canvas.width - ballRadius || x + dx < ballRadius) {
+        drawPaddle2()
+        //odraz míčku od bočních stěn
+        if(x + dx > canvas.width-ballRadius || x + dx < ballRadius) {
             dx = -dx;
         }
         
-        if (rightPressed && paddleX < canvas.width-paddleWidth) {
-        paddleX += 5;
+     
+        
+        //odraz od dolní pálky
+        if ((y + dy > canvas.height - paddleHeight - ballRadius) && (x > paddleX && x < paddleWidth + paddleX)) {
+            
+            dy = -dy;
+            dy -= zrychleni;
+            
+            if (dx > 0) {
+                dx += zrychleni;
+            }
+            else {
+                dx -= zrychleni;
+            }
+            
+            //increaseSpeed();
+        }     
+        
+        
+        //odraz od horní pálky
+        if ((y + dy < paddleHeight + ballRadius) && (x > paddleX2 && x < paddleWidth + paddleX2)) {
+            
+            dy = -dy;
+            dy += zrychleni;
+            
+            if (dx > 0) {
+                dx += zrychleni;
+            }
+            else {
+                dx -= zrychleni;
+            }
+            //increaseSpeed();
+        }     
+        
+        if (((y + dy > canvas.height - ballRadius) && (x < paddleX || x > paddleWidth + paddleX)) || ((y + dy < ballRadius) && (x < paddleX2 || x > paddleWidth + paddleX2))){
+            
+            // alert ("KONEC HRY!");
+            // document.location.reload();
+            
+            konecHry();
         }
-        else if (leftPressed && paddleX > 0) {
-        paddleX -= 5;
+                
+                
+        x += dx; //změň souřadnice x míčku
+        y += dy; //změň souřadnice y míčku
+    
+        if(rightPressed && paddleX < canvas.width-paddleWidth) {
+            paddleX += 2;
         }
+        else if(leftPressed && paddleX > 0) {
+            paddleX -= 2;
+        }
+        
+        if(rightPressed2 && paddleX2 < canvas.width-paddleWidth) {
+            paddleX2 += 2;
+        }
+        else if(leftPressed2 && paddleX2 > 0) {
+            paddleX2 -= 2;
+        }
+            
     }
     
     function keyDownHandler(e) {
@@ -88,6 +159,13 @@
         }
         else if(e.keyCode == 37) {
             leftPressed = true;
+        }
+        
+        if(e.keyCode == 68) {
+            rightPressed2 = true;
+        }
+        else if(e.keyCode == 65) {
+            leftPressed2 = true;
         }
     }
 
@@ -98,9 +176,49 @@
         else if(e.keyCode == 37) {
             leftPressed = false;
         }
+        
+        if(e.keyCode == 68) {
+            rightPressed2 = false;
+        }
+        else if(e.keyCode == 65) {
+            leftPressed2 = false;
+        }
+        
+        if(e.keyCode == 32) {
+            mezera = true;
+            interval = setInterval(draw, 10);
+        }
+        
+    }
+    
+    function increaseSpeed()
+    {
+        if (dy > 0)
+        {
+            dy += zrychleni;
+        }
+        else
+        {
+            dy -= zrychleni;
+        }
+        if (dx > 0)
+        {
+            dx += zrychleni;
+        }
+        else
+        {
+            dx -= zrychleni;
+        }
+    }
+    
+    function konecHry(){
+        
+        clearInterval(draw, 10);
+        document.location.reload();
+        
     }
     
 </script>
 
 </body>
-</html>
+</html

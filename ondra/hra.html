@@ -17,12 +17,12 @@
     var canvas = document.getElementById("myCanvas"); //vytvoření plátna
 
     var ctx = canvas.getContext("2d"); //vytvoření kontextu pro kreslení na plátně
-
-    //deklarace a nastavení všech potřebných proměnných
-    var x = canvas.width/2; //nastavení startovní souřadnice x míčku
-    var y = canvas.height-30; //nastavení startovní souřadnice y míčku
-    var dx = -1; //nastavení rychlosti míčku po ose x
-    var dy = -1; //nastavení rychlosti míčku po ose y
+ 
+    //deklarace a nastavení všech potřebných proměnných 
+    var x = canvas.width/2; //nastavení startovní souřadnice x míčku 
+    var y = canvas.height-30; //nastavení startovní souřadnice y míčku  
+    var dx = -1; //nastavení rychlosti míčku po ose x 
+    var dy = -1; //nastavení rychlosti míčku po ose y 
     var ballRadius = 10; //deklarace proměnné pro poloměr míčku
     
     var paddleHeight = 20; //výška pálky
@@ -35,9 +35,18 @@
     var aPressed = false;//výchozí stav klávesy A
     var dPressed = false;//výchozí stav klávesy D
     
-    var interval = setInterval(draw, 10); //nastavení zachytávače události uplynutí 10ms
+    var interval;
+    var intervalRunning = false;
     document.addEventListener("keydown", keyDownHandler, false); //nastavení zachytávače události klávesa je stisknuta
     document.addEventListener("keyup", keyUpHandler, false); //nastavení zachytávače události klávesa je uvolněna
+    
+    writeText("Press N to start game");
+    
+    function writeText(text){
+        ctx.font = "16px Arial";
+        ctx.fillStyle = "White";
+        ctx.fillText(text,(canvas.width)/2,(canvas.height)/2);
+    }
     
     //fce pro nakreslení míčku
     function drawBall() {
@@ -88,8 +97,8 @@
         //pálka tam není
         else if (y + dy > canvas.height - ballRadius)
         {
-            clearInterval(interval);
-            alert("konec hry");
+            gameOver();
+           // alert("konec hry");
             //document.location.reload();
         }
         //odraz od horní pálky
@@ -102,8 +111,8 @@
         //horní pálka tam není
         else if (y + dy < ballRadius)
         {
-            clearInterval(interval);
-            alert("konec hry");
+            gameOver();
+            //alert("konec hry");
             //document.location.reload();
         }
        
@@ -129,6 +138,14 @@
         else if(aPressed && paddleX2 > 0) {
             paddleX2 -= 7;
         }
+  
+    }
+ 
+    function gameOver() {
+        clearInterval(interval);
+        intervalRunning = false;
+        ctx.clearRect(0, 0, canvas.width, canvas.height); //vyčisti plátno
+        writeText("Konec hry, stiskni R pro znovuspuštění");
     }
     
     function keyDownHandler(e) {
@@ -145,20 +162,30 @@
         else if(e.keyCode == 65){
             aPressed = true;
         }
-    }
-
-    function keyUpHandler(e) {
-        if(e.keyCode == 39) {
-            rightPressed = false;
+    } 
+ 
+    function keyUpHandler(e) { 
+        if(e.keyCode == 39) { 
+            rightPressed = false; 
         }
         else if(e.keyCode == 37) {
             leftPressed = false;
         }
-         if(e.keyCode == 68) {
+        if(e.keyCode == 68) {
             dPressed = false;
         }
         else if(e.keyCode == 65) {
             aPressed = false;
+        }
+        if(e.keyCode == 78) {// stisk klávesy N
+            if (intervalRunning == false)
+            {
+                interval = setInterval(draw,10);
+                intervalRunning = true;
+            }
+        }
+        if(e.keyCode == 82) {
+           document.location.reload();
         }
     }
     

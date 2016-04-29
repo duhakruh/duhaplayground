@@ -12,11 +12,11 @@
     <body>
         hru odstartuješ klávesou N. Ovládání pálky spodního hráče šipkami vlevo,vpravo. Ovládání pálky horního hráče klávesami A,D
         <canvas id="myCanvas" width="1000" height="900">Your browser does not support the HTML5 canvas tag.</canvas>
+        
         <script>
             //https://developer.mozilla.org/en-US/docs/Games/Tutorials/2D_Breakout_game_pure_JavaScript
         
             var canvas = document.getElementById("myCanvas"); //vytvoření plátna
-        
             var ctx = canvas.getContext("2d"); //vytvoření kontextu pro kreslení na plátně
         
             //deklarace a nastavení všech potřebných proměnných
@@ -36,12 +36,18 @@
             var rightPressed2 = false; //výchozí stav klávesy pravé šipka 
             var leftPressed2 = false; //výchozí stav klávesy levá šipka
             
-            var speed = 0.1;
+            var speed = 1.1;
             var score = 0;
+            var info = "";
 
             var interval;
             var paddleDistance = 25;
             var angle1 = 0;
+            
+            var novyPomer = 1;
+            var uhelDopadu;
+            var uhelOdrazu;
+            var novyPomer;
             
             
             document.addEventListener("keydown", keyDownHandler, false); //nastavení zachytávače události klávesa je stisknuta
@@ -73,6 +79,19 @@
                 ctx.fillText("Score: " + score, 500, 450);
             }
             
+            function drawInfo() {
+                info = uhelDopadu;
+                info += "úhel pálky: " + angle1;
+                info += "úhel Odrazu: " + uhelOdrazu;
+                info += "nový poměr dy/dx: " + novyPomer;
+                
+                //dy = dx * novyPomer;
+                
+                ctx.font = "16px Arial";
+                ctx.fillStyle = "white";
+                ctx.fillText("Info: " + info, 100, 600);
+            }
+            
             
             //fce pro nakreslení míčku
             function drawBall() {
@@ -90,9 +109,9 @@
                 // ctx.fill();
                 // ctx.closePath();
                 
-                var a = paddleWidth * Math.cos(angle);
-                var b = paddleWidth * Math.sin(angle);
-                var a1 = paddleWidth - a;
+                var a = paddleWidth/2 * Math.cos(angle);
+                var b = paddleWidth/2 * Math.sin(angle);
+                var a1 = paddleWidth/2 - a;
                 
                 ctx.beginPath();
                 //ctx.moveTo(paddleX, canvas.height-paddleHeight);
@@ -100,7 +119,7 @@
                 ctx.moveTo(paddleX + a1, canvas.height - paddleDistance + b);
                 ctx.lineTo(paddleX + paddleWidth - a1, canvas.height - paddleDistance - b);
                 
-                ctx.lineWidth = 5;
+                ctx.lineWidth = 20;
                 ctx.strokeStyle = "yellow";
                 ctx.stroke();
             }
@@ -119,9 +138,10 @@
                 ctx.clearRect(0, 0, canvas.width, canvas.height); //vyčisti plátno
                 drawBall(); //nakresli míček
 
-                drawPaddle(angle1); //nakresli pálku
+                drawPaddle(toRad(angle1)); //nakresli pálku
                 drawPaddle2(); //nakresli pálku 2
                 drawScore();
+                drawInfo();
                 
                 //odraz míčku od bočních
                 if(x + dx > canvas.width-ballRadius || x + dx < ballRadius) {
@@ -132,7 +152,7 @@
                 //odraz na horní straně
                 if ((y + dy < ballRadius + paddleHeight) && (x > paddle2X && x < paddle2X + paddleWidth)) {
                     dy = -dy;
-                    increaseSpeed();
+                    //increaseSpeed();
                     score++;
                 }
                 else if (y + dy < ballRadius) {
@@ -145,9 +165,20 @@
                 //odraz na spodní straně
                 else if ((y + dy > canvas.height - ballRadius - paddleHeight) && (x > paddleX && x < paddleX + paddleWidth))
                 {
+                    uhelDopadu = Math.atan(dy/dx)*180/Math.PI;
+                    //uhelOdrazu = 180 - uhelDopadu + angle1;
+                    uhelOdrazu = uhelDopadu - angle1;
+                    //novyPomer = Math.abs(Math.tan(toRad(uhelOdrazu)));
+                    novyPomer = Math.tan(toRad(uhelOdrazu));
+                    dx = dy / novyPomer;
+                    
                     dy = -dy;
-                    increaseSpeed();
+                    //increaseSpeed();
                     score++;
+                    
+                    //úhel dopadu = úhlu odrazu
+                    //var novy_pomer = Math.tan(vr)
+                    
                 }
                 //pálka tam není
                 else if (y + dy > canvas.height - ballRadius)
@@ -162,7 +193,7 @@
                 //změň souřadnice  míčku x, y
                 x += dx; //změň souřadnice x míčku
                 y += dy; //změň souřadnice y míčku
-                requestAnimationFrame(draw);
+                
                 
                 //změň souřadnici x pálky
                 if(rightPressed && paddleX < canvas.width-paddleWidth) {
@@ -179,25 +210,27 @@
                 else if(leftPressed2 && paddle2X > 0) {
                     paddle2X -= 7;
                 }
+                
+                //requestAnimationFrame(draw)
             }
             
             function increaseSpeed()
             {
                 if (dy > 0)
                 {
-                    dy += speed;
+                    dy *= speed;
                 }
                 else
                 {
-                    dy -= speed;
+                    dy *= speed;
                 }
                 if (dx > 0)
                 {
-                    dx += speed;
+                    dx *= speed;
                 }
                 else
                 {
-                    dx -= speed;
+                    dx *= speed;
                 }
             }
             
@@ -209,13 +242,7 @@
                     leftPressed = true;
                 }
                 
-                //rotace první pálky
-                // if(e.keyCode == 38) { // up - pálka se otáčí proti směru hodinových ručiček
-                //     angle1 += 0.03;
-                // }
-                // if(e.keyCode == 40) { // down - pálka se otáčí po směru hodinových ručiček
-                //     angle1 -= 0.03;
-                // }
+                
                 
                 //2.palka
                 if(e.keyCode == 68) { // D
@@ -246,12 +273,43 @@
                 if(e.keyCode == 78) { // N
                     clearInterval(interval);
                     interval = setInterval(draw, 10); //nastavení zachytávače události uplynutí 10ms
+                    //draw();
                 }
                 
                 if(e.keyCode == 82) { // R
                     document.location.reload();
                 }
+                
+                if (e.keyCode == 73) { // I info
+                    alert(dx / dy + " " + vratStupne(dx / dy));
+                }
+                
+                //rotace první pálky
+                if(e.keyCode == 38) { // up - pálka se otáčí proti směru hodinových ručiček
+                    if (angle1 < 15)
+                    {
+                        angle1 += 5;
+                    }
+                    //alert(toRad(15));
+                }
+                if(e.keyCode == 40) { // down - pálka se otáčí po směru hodinových ručiček
+                    if (angle1 > -15)
+                    {
+                        angle1 -= 5;
+                    }
+                }
             }
+            
+            function vratStupne(pomer)
+            {
+                return  Math.atan(pomer)*180/Math.PI;
+            }
+            
+            function toRad(stupne)
+            {
+                return stupne * (Math.PI / 180) ;
+            }
+
         </script>
     </body>
 </html>
