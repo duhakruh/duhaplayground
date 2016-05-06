@@ -31,6 +31,8 @@
     var paddleX = (canvas.width-paddleWidth)/2;//počáteční poloha pálky1 na ose X
     var paddleX2 = (canvas.width-paddleWidth)/2;//počáteční poloha pálky2 na ose X
     
+    var paddleDistance = 25;
+    
     var rightPressed = false; // výchozí stav pravé šipky
     var leftPressed = false; // výchozí stav levé šipky
     
@@ -61,12 +63,26 @@
     
     
     //fce pro nakreslení pálky
-    function drawPaddle() {
+    function drawPaddle(angle) {
+        // ctx.beginPath();
+        // ctx.rect(paddleX, canvas.height-paddleHeight, paddleWidth, paddleHeight);
+        // ctx.fillStyle = "#0095DD";
+        // ctx.fill();
+        // ctx.closePath();
+        
+        var a = paddleWidth/2 * Math.cos(angle);
+        var b = paddleWidth/2 * Math.sin(angle);
+        var a1 = paddleWidth/2 - a;
+        
         ctx.beginPath();
-        ctx.rect(paddleX, canvas.height-paddleHeight, paddleWidth, paddleHeight);
-        ctx.fillStyle = "#0095DD";
-        ctx.fill();
-        ctx.closePath();
+        //ctx.moveTo(paddleX, canvas.height-paddleHeight);
+        
+        ctx.moveTo(paddleX + a1, canvas.height - paddleDistance + b);
+        ctx.lineTo(paddleX + paddleWidth - a1, canvas.height - paddleDistance - b);
+        
+        ctx.lineWidth = 20;
+        ctx.strokeStyle = "yellow";
+        ctx.stroke();
     }
     
     //fce pro nakreslení pálky

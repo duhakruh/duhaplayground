@@ -295,14 +295,15 @@
                         uhelDopadu = 90;
                     }
                     
-                    //uhelOdrazu = 180 - uhelDopadu + angle1;
-                    uhelOdrazu = 180 - angle1;
+                    uhelOdrazu = 180 - uhelDopadu + angle1;
                     
-                    //dx = dy / Math.tan(toRad(uhelOdrazu));
-                    dx = dy / Math.tan(toRad(160));
+                    //uhelOdrazu = 180 - angle1;
+                    
+                    dx = dy / Math.tan(toRad(uhelOdrazu));
+                    //dx = dy / Math.tan(toRad(160));
 
                     dy = -dy;
-                    //increaseSpeed();
+                    increaseSpeed();
                     
                     whoHitTheBall = 1;
                     
