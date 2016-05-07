@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+        <script src='https://cdn.firebase.com/js/client/2.2.1/firebase.js'></script>
+        <title>Gamedev Canvas Workshop</title>
+        <style>
+        	* { padding: 0; margin: 10; }
+        	#myCanvas { background: #088A4B; display: block; margin: 0 auto; }
+        	#myCanvas2 { background: red; display: block; margin: 0 auto; }
+        	body {background-image: url("https://dl.dropboxusercontent.com/s/i11qi92bgmndxjy/goniofce.png?dl=0");}
+        </style>
+    </head>
+    <body>
+        <!--hru odstartuješ klávesou N. Ovládání pálky spodního hráče šipkami vlevo,vpravo. Ovládání pálky horního hráče klávesami A,D-->
+        <div>
+            <canvas id="myCanvas" width="300" height="100">Your browser does not support the HTML5 canvas tag.</canvas>
+        </div>
+        <div>
+            <canvas id="myCanvas2" width="300" height="100">Your browser does not support the HTML5 canvas tag.</canvas>
+        </div>
+        <script>
+
+            var canvas = document.getElementById("myCanvas"); //vytvoření plátna
+            var ctx = canvas.getContext("2d"); //vytvoření kontextu pro kreslení na plátně
+            
+            var canvas2 = document.getElementById("myCanvas2"); //vytvoření plátna
+            var ctx2 = canvas2.getContext("2d"); //vytvoření kontextu pro kreslení na plátně
+
+            document.addEventListener("keydown", keyDownHandler, false); //nastavení zachytávače události klávesa je stisknuta
+            document.addEventListener("keyup", keyUpHandler, false); //nastavení zachytávače události klávesa je uvolněna
+            
+            
+            var counter1 = 1;
+            var counter2 = 1;
+            
+            var interval = setInterval(draw, 10); //nastavení zachytávače události uplynutí 10ms
+            
+            var rightPressed = false;
+            var leftPressed = false;
+            
+                 
+            function keyDownHandler(e) {
+                if(e.keyCode == 39) { //right arrow
+                    rightPressed = true;
+                }
+                if(e.keyCode == 37) { //left arrow
+                    leftPressed = true;
+                }
+                
+                
+            }
+        
+            function keyUpHandler(e) {
+                if(e.keyCode == 39) { //right arrow
+                    rightPressed = false;
+                }
+                else if(e.keyCode == 37) { //left arrow
+                    leftPressed = false;
+                }
+                
+                
+                
+            }
+            
+            function draw()
+            {
+                ctx.clearRect(0, 0, canvas.width, canvas.height); //vyčisti plátno
+                ctx2.clearRect(0, 0, canvas2.width, canvas2.height); //vyčisti plátno
+                
+                //napiš čas
+                
+                ctx.font = "16px Arial";
+                ctx.fillStyle = "white";
+                ctx.fillText(getTime(), 20, 20);
+                
+                if (rightPressed)
+                {
+                    counter1++;
+                }
+                
+                ctx2.font = "16px Arial";
+                ctx2.fillStyle = "white";
+                ctx2.fillText(counter1, 20, 20);
+                
+                if (leftPressed)
+                {
+                    counter2++;
+                }
+                
+                ctx2.font = "16px Arial";
+                ctx2.fillStyle = "white";
+                ctx2.fillText(counter2, 20, 40);
+                
+            }
+            
+            function getTime()
+            {
+                var currentdate = new Date(); 
+                var datetime = currentdate.getDate() + "/"
+                + (currentdate.getMonth()+1)  + "/" 
+                + currentdate.getFullYear() + " @ "  
+                + currentdate.getHours() + ":"  
+                + currentdate.getMinutes() + ":" 
+                + currentdate.getSeconds();
+                return datetime;
+            }
+            
+            
+            
+       
+
+        </script>
+    </body>
+</html>

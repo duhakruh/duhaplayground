@@ -7,19 +7,27 @@
         <title>Gamedev Canvas Workshop</title>
         <style>
         	* { padding: 0; margin: 10; }
-        	canvas { background: #088A4B; display: block; margin: 0 auto; }
+        	#myCanvas1 { background: orange; display: block; margin: 0 auto; }
+        	#myCanvas { background: #088A4B; display: block; margin: 0 auto; }
+        	#myCanvas2 { background: black; display: block; margin: 0 auto; }
         	body {background-image: url("https://dl.dropboxusercontent.com/s/i11qi92bgmndxjy/goniofce.png?dl=0");}
         </style>
     </head>
     <body>
         <!--hru odstartuješ klávesou N. Ovládání pálky spodního hráče šipkami vlevo,vpravo. Ovládání pálky horního hráče klávesami A,D-->
-        <canvas id="myCanvas" width="1000" height="900">Your browser does not support the HTML5 canvas tag.</canvas>
+        <canvas id="myCanvas1" width="1000" height="180">Your browser does not support the HTML5 canvas tag.</canvas>
+        <canvas id="myCanvas" width="1000" height="700">Your browser does not support the HTML5 canvas tag.</canvas>
+        <canvas id="myCanvas2" width="1000" height="100">Your browser does not support the HTML5 canvas tag.</canvas>
         <script>
             var myDataRef = new Firebase('https://milantest.firebaseio.com/');
             
             //https://developer.mozilla.org/en-US/docs/Games/Tutorials/2D_Breakout_game_pure_JavaScript
             var canvas = document.getElementById("myCanvas"); //vytvoření plátna
             var ctx = canvas.getContext("2d"); //vytvoření kontextu pro kreslení na plátně
+            var canvas1 = document.getElementById("myCanvas1"); //vytvoření plátna
+            var ctx1 = canvas1.getContext("2d"); //vytvoření kontextu pro kreslení na plátně
+            var canvas2 = document.getElementById("myCanvas2"); //vytvoření plátna
+            var ctx2 = canvas2.getContext("2d"); //vytvoření kontextu pro kreslení na plátně
         
             //deklarace a nastavení všech potřebných proměnných
             var x = canvas.width/2; //nastavení startovní souřadnice x míčku
@@ -35,10 +43,16 @@
             
             var rightPressed = false; //výchozí stav klávesy pravé šipka 
             var leftPressed = false; //výchozí stav klávesy levá šipka
-            var rightPressed2 = false; //výchozí stav klávesy pravé šipka 
-            var leftPressed2 = false; //výchozí stav klávesy levá šipka
+            var rightPressed2 = false; //výchozí stav klávesy D
+            var leftPressed2 = false; //výchozí stav klávesy A
             
-            var speed = 1.1;
+            var upPressed = false; //výchozí stav klávesy horní šipka 
+            var downPressed = false; //výchozí stav klávesy spodní šipka
+            var upPressed2 = false; //výchozí stav klávesy W
+            var downPressed2 = false; //výchozí stav klávesy S
+            
+            var speedControl = 1;
+            var speed = speedControl;
             var scoreUpperPlayer = 0;
             var scoreBottomPlayer = 0;
 
@@ -65,6 +79,14 @@
                 ctx.font = "16px Arial";
                 ctx.fillStyle = "white";
                 ctx.fillText("Press N to start the game.", 500, 450);
+                
+                ctx1.font = "46px Arial";
+                ctx1.fillStyle = "white";
+                ctx1.fillText("Programátorský kroužek uvádí:", 180, 60);
+                
+                ctx1.font = "86px Arial";
+                ctx1.fillStyle = "brown";
+                ctx1.fillText("RETRO-PING-PONG", 110, 150);
             }
             
             function drawGameOver(hrac) {
@@ -76,24 +98,27 @@
             }
             
             function drawScore() {
-                ctx.font = "16px Arial";
-                ctx.fillStyle = "white";
-                ctx.fillText(scoreUpperPlayer, 5, canvas.height / 2 - 15);
-                ctx.fillText(scoreBottomPlayer, 5, canvas.height / 2 + 15);
+                ctx2.clearRect(0, 0, canvas2.width, canvas2.height); //vyčisti plátno
+                ctx2.font = "40px Arial";
+                ctx2.fillStyle = "white";
+                ctx2.fillText("upper: " + scoreUpperPlayer, 10, 50);
+                ctx2.fillText("bottom: " + scoreBottomPlayer, 780, 50);
             }
             
             function drawInfo(db) {
-                var info1 = " úhel spodní pálky: " + angle1;
-                var info2 = " úhel horní pálky: " + angle2;
-                var info3 = " úhel Dopadu: " + uhelDopadu;
-                var info4 = " úhel Odrazu: " + uhelOdrazu;
+                var info1 = " úhel spodní pálky: " + Math.round(angle1);
+                var info2 = " úhel horní pálky: " + Math.round(angle2);
+                var info3 = " úhel Dopadu: " + Math.round(uhelDopadu);
+                var info4 = " úhel Odrazu: " + Math.round(uhelOdrazu);
                 
-                ctx.font = "16px Arial";
-                ctx.fillStyle = "white";
-                ctx.fillText(info1, 0, 600);
-                ctx.fillText(info2, 0, 620);
-                ctx.fillText(info3, 0, 640);
-                ctx.fillText(info4, 0, 660);
+                ctx2.font = "16px Arial";
+                ctx2.fillStyle = "white";
+                ctx2.fillText(info1, 200, 20);
+                ctx2.fillText(info2, 400, 20);
+                ctx2.fillText(info3, 200, 40);
+                ctx2.fillText(info4, 400, 40);
+                ctx2.fillText("speed " + speed, 600, 40);
+                ctx2.fillText("dx dy " + dx + "  " + dy, 600, 60);
                 
                 //myDataRef.set(info1);
                 if (db)
@@ -176,6 +201,7 @@
                 if (y + dy < ballRadius + paddleHeight + speed)
                 {
                     paddle2X = x - paddleWidth/2;
+                    dx = 0;
                 }
             }
             
@@ -183,7 +209,7 @@
                 ctx.clearRect(0, 0, canvas.width, canvas.height); //vyčisti plátno
                 drawHalfLine();
                 drawBall(); //nakresli míček
-                paddleRobot();
+                //paddleRobot();
 
                 drawPaddle(toRad(angle1)); //nakresli pálku
                 drawPaddle2(toRad(angle2)); //nakresli pálku 2
@@ -252,23 +278,23 @@
                         uhelDopadu = 90;
                     }
                     
-                    uhelOdrazu = 180 - uhelDopadu + angle2;
+                    // uhelOdrazu = 180 - uhelDopadu + angle2;
                     
-                    dx = dy / Math.tan(toRad(uhelOdrazu));
+                    // dx = dy / Math.tan(toRad(uhelOdrazu));
                     
                     
-                    dy = -dy;
-                    //increaseSpeed();
+                    // dy = -dy;
+                    
+                    hitBallByUpperPaddle(angle2, uhelDopadu);
+                    
+                    increaseSpeed();
+                    
                     whoHitTheBall = 2;
                     
                     drawInfo(true);
                 }
                 //horní pálka tam není
                 else if (y + dy < ballRadius) { 
-                    //alert("konec hry hráč 2 prohrál");
-                    //document.location.reload();
-                    //clearInterval(interval);
-                    //drawGameOver();
                     bottomPlayerScored();
                     
                     if (scoreBottomPlayer == 3)
@@ -295,14 +321,8 @@
                         uhelDopadu = 90;
                     }
                     
-                    uhelOdrazu = 180 - uhelDopadu + angle1;
+                    hitBallByBottomPaddle(angle1, uhelDopadu);
                     
-                    //uhelOdrazu = 180 - angle1;
-                    
-                    dx = dy / Math.tan(toRad(uhelOdrazu));
-                    //dx = dy / Math.tan(toRad(160));
-
-                    dy = -dy;
                     increaseSpeed();
                     
                     whoHitTheBall = 1;
@@ -312,11 +332,6 @@
                 //spodní pálka tam není
                 else if (y + dy > canvas.height - ballRadius)
                 {
-                    //alert("konec hry hráč 1 prohrál");
-                    //document.location.reload();
-                    //clearInterval(interval);
-                    //drawGameOver();
-                    
                     upperPlayerScored();
                     
                     if (scoreUpperPlayer == 3)
@@ -346,7 +361,96 @@
                     paddle2X -= 7;
                 }
                 
-                //requestAnimationFrame(draw)
+                // if (upPressed)
+                // {
+                //     if (angle1 < uhelKlopeni)
+                //     {
+                //         angle1 += 5;    
+                //     }
+                // }
+                // if (downPressed)
+                // {
+                //     if (angle1 > -uhelKlopeni)
+                //     {
+                //         angle1 -= 5;   
+                //     }
+                // }
+                // if (upPressed2)
+                // {
+                //     if (angle2 < uhelKlopeni)
+                //     {
+                //         angle2 += 5;   
+                //     }
+                // }
+                // if (downPressed2)
+                // {
+                //     if (angle2 > -uhelKlopeni)
+                //     {
+                //         angle2 -= 5;   
+                //     }
+                // }
+            }
+            
+            function hitBallByBottomPaddle(uhelPalky, uhelDopadu1)
+            {
+                uhelOdrazu = 180 - (uhelDopadu1 - 2* uhelPalky);
+                
+                var radiany = toRad(uhelOdrazu);
+
+                var pomer_dydx = Math.tan(radiany);
+                
+                //dx = speed / (1+pomer_dydx);
+                dx = 1 / (pomer_dydx);
+                dy = dx * pomer_dydx;
+
+                if ((uhelOdrazu > 90) && (dx > 0))
+                {
+                    dx = -dx;
+                }
+
+                if (dy > 0)
+                {   
+                    dy = -dy;
+                }
+                
+                dx *= speed;
+                dy *= speed;
+            }
+            
+            function hitBallByUpperPaddle(uhelPalky, uhelDopadu1)
+            {
+                uhelOdrazu = 180 - (uhelDopadu1 - 2* uhelPalky);
+                
+                //alert("uhelOdrazu " + uhelOdrazu);
+                
+                var radiany = toRad(uhelOdrazu);
+
+                var pomer_dydx = Math.tan(radiany);
+                
+                //alert("pomer_dydx " + pomer_dydx);
+                
+                //dx = speed / (1+pomer_dydx);
+                dx = 1 / (pomer_dydx);
+                dy = dx * pomer_dydx;
+
+                if (uhelOdrazu > 90)
+                {
+                    dx = Math.abs(dx);
+                }
+                else if (uhelOdrazu < 90)
+                {
+                    dx = -Math.abs(dx);
+                }
+                else
+                {
+                    dx = 0;
+                }
+
+                dy = Math.abs(dy);
+                
+                //alert(dx + "  " + dy);
+                dx *= speed;
+                dy *= speed;
             }
             
             function upperPlayerScored()
@@ -354,9 +458,10 @@
                 scoreUpperPlayer++;
                 x = canvas.width/2; //nastavení startovní souřadnice x míčku
                 y = canvas.height-30; //nastavení startovní souřadnice y míčku
-                speed = 1.1;
+                speed = speedControl;
                 dx = -1; //nastavení rychlosti míčku po ose x
                 dy = -1; //nastavení rychlosti míčku po ose y
+                whoHitTheBall = 1;
             }
             
             function bottomPlayerScored()
@@ -364,28 +469,37 @@
                 scoreBottomPlayer++;
                 x = canvas.width/2; //nastavení startovní souřadnice x míčku
                 y = 30; //nastavení startovní souřadnice y míčku
-                speed = 1.1;
+                speed = speedControl;
                 dx = 1; //nastavení rychlosti míčku po ose x
                 dy = 1; //nastavení rychlosti míčku po ose y
+                whoHitTheBall = 2;
             }
+            
+            // function increaseSpeed()
+            // {
+            //     if (dy > 0)
+            //     {
+            //         dy *= speed;
+            //     }
+            //     else
+            //     {
+            //         dy *= speed;
+            //     }
+            //     if (dx > 0)
+            //     {
+            //         dx *= speed;
+            //     }
+            //     else
+            //     {
+            //         dx *= speed;
+            //     }
+            // }
             
             function increaseSpeed()
             {
-                if (dy > 0)
+                if (speed < 10)
                 {
-                    dy *= speed;
-                }
-                else
-                {
-                    dy *= speed;
-                }
-                if (dx > 0)
-                {
-                    dx *= speed;
-                }
-                else
-                {
-                    dx *= speed;
+                    speed += 0.1;
                 }
             }
             
@@ -404,6 +518,35 @@
                 else if(e.keyCode == 65) { //A
                     leftPressed2 = true;
                 }
+                
+                // //rotace první pálky
+                // if(e.keyCode == 38) { // up - pálka se otáčí proti směru hodinových ručiček
+                //     if (angle1 < uhelKlopeni)
+                //     {
+                //         upPressed = true;
+                //     }
+                // }
+                // else if(e.keyCode == 40) { // down - pálka se otáčí po směru hodinových ručiček
+                //     if (angle1 > -uhelKlopeni)
+                //     {
+                //         downPressed = true;
+                //     }
+                // }
+                
+                // //rotace horní pálky
+                // if(e.keyCode == 87) { // W - pálka se otáčí proti směru hodinových ručiček
+                //     if (angle2 < uhelKlopeni)
+                //     {
+                //         upPressed2 = true;
+                //     }
+                // }
+                // else if(e.keyCode == 83) { // S - pálka se otáčí po směru hodinových ručiček
+                //     if (angle2 > -uhelKlopeni)
+                //     {
+                //         downPressed2 = true;
+                //     }
+                // }
+                
             }
         
             function keyUpHandler(e) {
@@ -438,18 +581,33 @@
                     alert(dx / dy + " " + vratStupne(dx / dy));
                 }
                 
+                // //rotace první pálky
+                // if(e.keyCode == 38) { // up - pálka se otáčí proti směru hodinových ručiček
+                //     upPressed = false;
+                // }
+                // else if(e.keyCode == 40) { // down - pálka se otáčí po směru hodinových ručiček
+                //     downPressed = false;
+                // }
+                
+                // //rotace horní pálky
+                // if(e.keyCode == 87) { // W - pálka se otáčí proti směru hodinových ručiček
+                //     upPressed2 = false;
+                // }
+                // else if(e.keyCode == 83) { // S - pálka se otáčí po směru hodinových ručiček
+                //     downPressed2 = false;
+                // }
+                
                 //rotace první pálky
                 if(e.keyCode == 38) { // up - pálka se otáčí proti směru hodinových ručiček
                     if (angle1 < uhelKlopeni)
                     {
-                        angle1 += 5;
+                        angle1 += 5;    
                     }
-                    //alert(toRad(15));
                 }
-                if(e.keyCode == 40) { // down - pálka se otáčí po směru hodinových ručiček
+                else if(e.keyCode == 40) { // down - pálka se otáčí po směru hodinových ručiček
                     if (angle1 > -uhelKlopeni)
                     {
-                        angle1 -= 5;
+                        angle1 -= 5;    
                     }
                 }
                 
@@ -457,14 +615,13 @@
                 if(e.keyCode == 87) { // W - pálka se otáčí proti směru hodinových ručiček
                     if (angle2 < uhelKlopeni)
                     {
-                        angle2 += 5;
+                        angle2 += 5;    
                     }
-                    //alert(toRad(15));
                 }
-                if(e.keyCode == 83) { // S - pálka se otáčí po směru hodinových ručiček
+                else if(e.keyCode == 83) { // S - pálka se otáčí po směru hodinových ručiček
                     if (angle2 > -uhelKlopeni)
                     {
-                        angle2 -= 5;
+                        angle2 -= 5;    
                     }
                 }
                 
