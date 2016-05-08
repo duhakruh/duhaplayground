@@ -1,258 +1,266 @@
-<!DOCTYPE html> //TOM
-
+<!DOCTYPE html>
 <html>
-<head>
-    <meta charset="utf-8" />
-    <title>Gamedev Canvas Workshop</title>
-    <style>
-    	* { padding: 0; margin: 0; }
-    	canvas { background: #3A7833; display: block; margin: 0 auto; }
-    </style>
-</head>
-<body>
-
-<canvas id="myCanvas" width="480" height="620"></canvas>
-
-<script>
-	var canvas = document.getElementById("myCanvas");
-    var ctx = canvas.getContext("2d");
-   
-    canvas = document.getElementById("myCanvas"); //vytvoření plátna
-    ctx = canvas.getContext("2d"); //vytvoření kontextu pro kreslení na plátně
-
-    var x = canvas.width/2; //nastavení startovní souřadnice x míčku
-    var y = canvas.height-30; //nastavení startovní souřadnice y míčku
-    var dx = -0.5; //nastavení rychlosti míčku po ose x
-    var dy = -0.5; //nastavení rychlosti míčku po ose y
-    var ballRadius = 10; //deklarace proměnné pro poloměr míčku
+    <head>
+        <meta charset="utf-8" />
+        <title>Gamedev Canvas Workshop</title>
+        <style>
+        	* { padding: 0; margin: 0; }
+        	#myCanvas1 { display: block; margin: 0 auto; }
+        	#myCanvas { background: #3A7833; display: block; margin: 0 auto; }
+        </style>
+    </head>
+    <body>
+        <canvas id="myCanvas1" width="480" height="200"></canvas>
+        <canvas id="myCanvas" width="480" height="700"></canvas>
     
-    var paddleHeight = 10; //výška pálky
-    var paddleWidth = 75; // šířka pálky
-    var paddleX = (canvas.width-paddleWidth)/2;//počáteční poloha pálky1 na ose X
-    var paddleX2 = (canvas.width-paddleWidth)/2;//počáteční poloha pálky2 na ose X
-    
-    var paddleDistance = 25;
-    
-    var rightPressed = false; // výchozí stav pravé šipky
-    var leftPressed = false; // výchozí stav levé šipky
-    
-    var rightPressed2 = false; // výchozí stav d
-    var leftPressed2 = false; // výchozí stav a
-    
-    var mezera = false; // výchozí stav mezery
-    var enter = false; // výchozí stav enteru
-    
-    var zrychleni = 0.3;
-    
-    var interval; //smyčka po 10ms
-    
-    document.addEventListener("keydown", keyDownHandler, false);
-    document.addEventListener("keyup", keyUpHandler, false);
-    
-    drawStartGame();
-    
-    //fce pro nakreslení míčku
-    function drawBall() {
-        ctx.beginPath();
-        ctx.arc(x, y, ballRadius, 0, Math.PI*2);
-        ctx.fillStyle = "white";
-        ctx.fill();
-        ctx.closePath();
-    }
-    
-    
-    
-    //fce pro nakreslení pálky
-    function drawPaddle(angle) {
-        // ctx.beginPath();
-        // ctx.rect(paddleX, canvas.height-paddleHeight, paddleWidth, paddleHeight);
-        // ctx.fillStyle = "#0095DD";
-        // ctx.fill();
-        // ctx.closePath();
-        
-        var a = paddleWidth/2 * Math.cos(angle);
-        var b = paddleWidth/2 * Math.sin(angle);
-        var a1 = paddleWidth/2 - a;
-        
-        ctx.beginPath();
-        //ctx.moveTo(paddleX, canvas.height-paddleHeight);
-        
-        ctx.moveTo(paddleX + a1, canvas.height - paddleDistance + b);
-        ctx.lineTo(paddleX + paddleWidth - a1, canvas.height - paddleDistance - b);
-        
-        ctx.lineWidth = 20;
-        ctx.strokeStyle = "yellow";
-        ctx.stroke();
-    }
-    
-    //fce pro nakreslení pálky
-    function drawPaddle2() {
-        ctx.beginPath();
-        ctx.rect(paddleX2, canvas.height-canvas.height, paddleWidth, paddleHeight);
-        ctx.fillStyle = "#0095DD";
-        ctx.fill();
-        ctx.closePath();
-    }
-    
-    function drawStartGame() {
-        ctx.font = "30px Arial";
-        ctx.fillStyle = "white";
-        ctx.fillText("Stiskni mezerník pro START.", 50, canvas.height/2);
-        }
-        
-    function drawFinishGame() {
-        ctx.font = "30px Arial";
-        ctx.fillStyle = "white";
-        ctx.fillText("KONEC HRY!", 150, canvas.height/2);
-        }
-    
-    //fce pro 
-    function draw() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);//vyčisti plátno
-        
-        drawBall(); //nakresli míček
-        drawPaddle();
-        drawPaddle2()
-        //odraz míčku od bočních stěn
-        if(x + dx > canvas.width-ballRadius || x + dx < ballRadius) {
-            dx = -dx;
-        }
-        
-     
-        
-        //odraz od dolní pálky
-        if ((y + dy > canvas.height - paddleHeight - ballRadius) && (x > paddleX && x < paddleWidth + paddleX)) {
+        <script>
+            var canvas1 = document.getElementById("myCanvas1"); //vytvoření plátna
+            var ctx1 = canvas1.getContext("2d"); //vytvoření kontextu pro kreslení na plátně
             
-            dy = -dy;
-            dy -= zrychleni;
+        	var canvas = document.getElementById("myCanvas");
+            var ctx = canvas.getContext("2d");
+           
+            canvas = document.getElementById("myCanvas"); //vytvoření plátna
+            ctx = canvas.getContext("2d"); //vytvoření kontextu pro kreslení na plátně
             
-            if (dx > 0) {
-                dx += zrychleni;
-            }
-            else {
-                dx -= zrychleni;
+            var lineWidth = 20;
+            
+            var ballRadius = 10; //deklarace proměnné pro poloměr míčku
+            
+            var x = canvas.width / 2; //nastavení startovní souřadnice x míčku
+            var y = canvas.height - lineWidth * 1.5 - ballRadius;//nastavení startovní souřadnice y míčku
+            var dx = -0.5; //nastavení rychlosti míčku po ose x
+            var dy = -0.5; //nastavení rychlosti míčku po ose y
+            
+            
+            var paddleHeight = 10; //výška pálky
+            var paddleWidth = 75; // šířka pálky
+            var paddleX = (canvas.width-paddleWidth)/2;//počáteční poloha pálky1 na ose X
+            var paddleX2 = (canvas.width-paddleWidth)/2;//počáteční poloha pálky2 na ose X
+            
+            var angle1 = 0;
+            var angle2 = 0;
+            
+            var rightPressed = false; // výchozí stav pravé šipky
+            var leftPressed = false; // výchozí stav levé šipky
+            
+            var rightPressed2 = false; // výchozí stav d
+            var leftPressed2 = false; // výchozí stav a
+            
+            var mezera = false; // výchozí stav mezery
+            var enter = false; // výchozí stav enteru
+            
+            var zrychleni = 0.3;
+            
+            var interval; //smyčka po 10ms
+            
+            
+            
+            document.addEventListener("keydown", keyDownHandler, false);
+            document.addEventListener("keyup", keyUpHandler, false);
+            
+            drawStartGame();
+            
+            //fce pro nakreslení míčku
+            function drawBall() {
+                ctx.beginPath();
+                ctx.arc(x, y, ballRadius, 0, Math.PI*2);
+                ctx.fillStyle = "white";
+                ctx.fill();
+                ctx.closePath();
             }
             
-            //increaseSpeed();
-        }     
-        
-        
-        //odraz od horní pálky
-        if ((y + dy < paddleHeight + ballRadius) && (x > paddleX2 && x < paddleWidth + paddleX2)) {
             
-            dy = -dy;
-            dy += zrychleni;
             
-            if (dx > 0) {
-                dx += zrychleni;
+            //fce pro nakreslení dolní pálky
+            function drawPaddle(angle1_par) {
+                
+                var a = paddleWidth / 2 * Math.sin(angle1_par);
+                var b = paddleWidth / 2 * Math.cos(angle1_par);
+                var a1 = paddleWidth / 2 - b;
+                ctx.beginPath();
+                ctx.moveTo(paddleX + a1, canvas.height - lineWidth + a);
+                ctx.lineTo(paddleX + paddleWidth - a1, canvas.height - lineWidth - a);
+                ctx.lineWidth = lineWidth;
+                ctx.strokeStyle = "red";
+                ctx.stroke();
+         
+                ctx.closePath();
+                
+                // ctx.beginPath();
+                // ctx.rect(paddleX, canvas.height-paddleHeight, paddleWidth, paddleHeight);
+                // ctx.fillStyle = "#0095DD";
+                // ctx.fill();
+                // ctx.closePath();
             }
-            else {
-                dx -= zrychleni;
-            }
-            //increaseSpeed();
-        }     
+            
+            //fce pro nakreslení horní pálky
+            function drawPaddle2(angle2_par2) {
+                
+                var a = paddleWidth / 2 * Math.sin(angle2_par2);
+                var b = paddleWidth / 2 * Math.cos(angle2_par2);
+                var a1 = paddleWidth / 2 - b;
+                ctx.beginPath();
+                ctx.moveTo(paddleX2 + a1, lineWidth + a);
+                ctx.lineTo(paddleX2 + paddleWidth - a1, lineWidth - a);
+                ctx.lineWidth = lineWidth;
+                ctx.strokeStyle = "blue";
+                ctx.stroke();
         
-        if (((y + dy > canvas.height - ballRadius) && (x < paddleX || x > paddleWidth + paddleX)) || ((y + dy < ballRadius) && (x < paddleX2 || x > paddleWidth + paddleX2))){
+                ctx.closePath();
+                
+                // ctx.beginPath();
+                // ctx.rect(paddleX2, canvas.height-canvas.height, paddleWidth, paddleHeight);
+                // ctx.fillStyle = "#0095DD";
+                // ctx.fill();
+                // ctx.closePath();
+            }
             
-            // alert ("KONEC HRY!");
-            // document.location.reload();
+            function drawStartGame() {
+                ctx.font = "30px Arial";
+                ctx.fillStyle = "white";
+                ctx.fillText("Stiskni mezerník pro START.", 50, canvas.height/2);
+                }
+                
+            function drawFinishGame() {
+                ctx.font = "30px Arial";
+                ctx.fillStyle = "white";
+                ctx.fillText("KONEC HRY!", 150, canvas.height/2);
+                }
             
-            konecHry();
-        }
+            //fce pro 
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);//vyčisti plátno
+                
+                drawBall(); //nakresli míček
+                drawPaddle(angle1);
+                drawPaddle2(angle2)
+                //odraz míčku od bočních stěn
+                if(x + dx > canvas.width-ballRadius || x + dx < ballRadius) {
+                    dx = -dx;
+                }
+                
+             
+                
+                //odraz od dolní pálky
+                if ((y + dy > canvas.height - lineWidth - lineWidth / 2 - ballRadius) && (x > paddleX && x < paddleWidth + paddleX)) {
+                    
+                    dy = -dy;
+                   
+                    
+                    //increaseSpeed();
+                }     
                 
                 
-        x += dx; //změň souřadnice x míčku
-        y += dy; //změň souřadnice y míčku
-    
-        if(rightPressed && paddleX < canvas.width-paddleWidth) {
-            paddleX += 2;
-        }
-        else if(leftPressed && paddleX > 0) {
-            paddleX -= 2;
-        }
-        
-        if(rightPressed2 && paddleX2 < canvas.width-paddleWidth) {
-            paddleX2 += 2;
-        }
-        else if(leftPressed2 && paddleX2 > 0) {
-            paddleX2 -= 2;
-        }
+                //odraz od horní pálky
+                if ((y + dy < lineWidth + lineWidth / 2 + ballRadius) && (x > paddleX2 && x < paddleWidth + paddleX2)) {
+                    
+                    dy = -dy;
+                    
+                    //increaseSpeed();
+                }     
+                
+                if (((y + dy > canvas.height - ballRadius) && (x < paddleX || x > paddleWidth + paddleX)) || ((y + dy < ballRadius) && (x < paddleX2 || x > paddleWidth + paddleX2))){
+                    
+                    // alert ("KONEC HRY!");
+                    // document.location.reload();
+                    
+                    konecHry();
+                }
+                        
+                        
+                x += dx; //změň souřadnice x míčku
+                y += dy; //změň souřadnice y míčku
             
-    }
+                if(rightPressed && paddleX < canvas.width-paddleWidth) {
+                    paddleX += 2;
+                }
+                else if(leftPressed && paddleX > 0) {
+                    paddleX -= 2;
+                }
+                
+                if(rightPressed2 && paddleX2 < canvas.width-paddleWidth) {
+                    paddleX2 += 2;
+                }
+                else if(leftPressed2 && paddleX2 > 0) {
+                    paddleX2 -= 2;
+                }
+                    
+            }
+            
+            function keyDownHandler(e) {
+                if(e.keyCode == 39) {
+                    rightPressed = true;
+                }
+                else if(e.keyCode == 37) {
+                    leftPressed = true;
+                }
+                
+                if(e.keyCode == 68) {
+                    rightPressed2 = true;
+                }
+                else if(e.keyCode == 65) {
+                    leftPressed2 = true;
+                }
+            }
+        
+            function keyUpHandler(e) {
+                if(e.keyCode == 39) {
+                    rightPressed = false;
+                }
+                else if(e.keyCode == 37) {
+                    leftPressed = false;
+                }
+                
+                if(e.keyCode == 68) {
+                    rightPressed2 = false;
+                }
+                else if(e.keyCode == 65) {
+                    leftPressed2 = false;
+                }
+                
+                if(e.keyCode == 32) {
+                    mezera = true;
+                    interval = setInterval(draw, 10);
+                }
+                
+                if(e.keyCode == 13) {
+                    enter = true;
+                    document.location.reload();
+                }
+                
+            }
+            
+            function increaseSpeed()
+            {
+                if (dy > 0)
+                {
+                    dy += zrychleni;
+                }
+                else
+                {
+                    dy -= zrychleni;
+                }
+                if (dx > 0)
+                {
+                    dx += zrychleni;
+                }
+                else
+                {
+                    dx -= zrychleni;
+                }
+            }
+            
+            function konecHry(){
+                drawFinishGame();
+                clearInterval(draw, 10);
+                
+                
+                
+           
+            }
+            
+        </script>
     
-    function keyDownHandler(e) {
-        if(e.keyCode == 39) {
-            rightPressed = true;
-        }
-        else if(e.keyCode == 37) {
-            leftPressed = true;
-        }
-        
-        if(e.keyCode == 68) {
-            rightPressed2 = true;
-        }
-        else if(e.keyCode == 65) {
-            leftPressed2 = true;
-        }
-    }
-
-    function keyUpHandler(e) {
-        if(e.keyCode == 39) {
-            rightPressed = false;
-        }
-        else if(e.keyCode == 37) {
-            leftPressed = false;
-        }
-        
-        if(e.keyCode == 68) {
-            rightPressed2 = false;
-        }
-        else if(e.keyCode == 65) {
-            leftPressed2 = false;
-        }
-        
-        if(e.keyCode == 32) {
-            mezera = true;
-            interval = setInterval(draw, 10);
-        }
-        
-        if(e.keyCode == 13) {
-            enter = true;
-            document.location.reload();
-        }
-        
-    }
-    
-    function increaseSpeed()
-    {
-        if (dy > 0)
-        {
-            dy += zrychleni;
-        }
-        else
-        {
-            dy -= zrychleni;
-        }
-        if (dx > 0)
-        {
-            dx += zrychleni;
-        }
-        else
-        {
-            dx -= zrychleni;
-        }
-    }
-    
-    function konecHry(){
-        drawFinishGame();
-        clearInterval(draw, 10);
-        
-        
-        
-   
-    }
-    
-</script>
-
-</body>
+    </body>
 </html>
