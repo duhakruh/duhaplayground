@@ -4,27 +4,20 @@
         <meta charset="utf-8" />
         <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
         <script src='https://cdn.firebase.com/js/client/2.2.1/firebase.js'></script>
+        <link rel="stylesheet" type="text/css" href="main.css">
         <title>Gamedev Canvas Workshop</title>
-        <style>
-        	* { padding: 0; margin: 10; }
-        	#myCanvas1 { background: "rgb(193, 69, 31)"; display: block; margin: 0 auto; }
-        	#myCanvas { background: #088A4B; display: block; margin: 0 auto; }
-        	#myCanvas2 { background: black; display: block; margin: 0 auto; }
-        	body {
-        	    background: url("https://dl.dropboxusercontent.com/s/1ozltwq7nz31c0h/pozadiPaprsky.jpg?dl=0") no-repeat;
-        	    background-size: 100%;
-        	}
-        	
-  /*      	body {*/
-  /*background: url(bgimage.jpg) no-repeat;*/
-  /*background-size: 100%;*/
-
-        </style>
     </head>
     <body>
-        <!--hru odstartuješ klávesou N. Ovládání pálky spodního hráče šipkami vlevo,vpravo. Ovládání pálky horního hráče klávesami A,D-->
+        <div id="includedContent"></div>
+        <script> 
+            $(function()
+            {
+                $("#includedContent").load("menu.html"); 
+            });
+        </script> 
+        
         <canvas id="myCanvas1" width="1000" height="180">Your browser does not support the HTML5 canvas tag.</canvas>
-        <canvas id="myCanvas" width="1000" height="700">Your browser does not support the HTML5 canvas tag.</canvas>
+        <canvas id="myCanvas" width="1000" height="600">Your browser does not support the HTML5 canvas tag.</canvas>
         <canvas id="myCanvas2" width="1000" height="100">Your browser does not support the HTML5 canvas tag.</canvas>
         <script>
             var myDataRef = new Firebase('https://milantest.firebaseio.com/');
@@ -37,9 +30,11 @@
             var canvas2 = document.getElementById("myCanvas2"); //vytvoření plátna
             var ctx2 = canvas2.getContext("2d"); //vytvoření kontextu pro kreslení na plátně
         
+            var paddleDistance = 70;
+        
             //deklarace a nastavení všech potřebných proměnných
             var x = canvas.width/2; //nastavení startovní souřadnice x míčku
-            var y = canvas.height-30; //nastavení startovní souřadnice y míčku
+            var y = canvas.height-paddleDistance*2; //nastavení startovní souřadnice y míčku
             var dx = -1; //nastavení rychlosti míčku po ose x
             var dy = -1; //nastavení rychlosti míčku po ose y
             var ballRadius = 10; //deklarace proměnné pro poloměr míčku
@@ -67,7 +62,7 @@
             var interval;
             var intervalRunning = false;
             
-            var paddleDistance = 25;
+            
             var angle1 = 0; //spodní hráč
             var angle2 = 0;
             
@@ -76,6 +71,14 @@
 
             var whoHitTheBall = 0;
             var uhelKlopeni = 60;
+            
+            var offsetY = 0;
+            var offsetX = 0;
+            var rameno = 0;
+            var offsetY2 = 0;
+            var offsetX2 = 0;
+            var rameno2 = 0;
+            
             
             document.addEventListener("keydown", keyDownHandler, false); //nastavení zachytávače události klávesa je stisknuta
             document.addEventListener("keyup", keyUpHandler, false); //nastavení zachytávače události klávesa je uvolněna
@@ -126,10 +129,13 @@
                 ctx2.fillStyle = "white";
                 ctx2.fillText(info1, 200, 20);
                 ctx2.fillText(info2, 400, 20);
+                ctx2.fillText("x= " + x + " y= " + y, 600, 20);
                 ctx2.fillText(info3, 200, 40);
                 ctx2.fillText(info4, 400, 40);
                 ctx2.fillText("speed " + speed, 600, 40);
                 ctx2.fillText("dx dy " + dx + "  " + dy, 600, 60);
+                ctx2.fillText("angle1 " + Math.round(angle1) + " offsetX " + Math.round(offsetX) + " offsetY " + Math.round(offsetY) + " rameno " + Math.round(rameno), 600, 80);
+                ctx2.fillText("angle2 " + Math.round(angle2) + " offsetX2 " + Math.round(offsetX2) + " offsetY2 " + Math.round(offsetY2) + " rameno2 " + Math.round(rameno2), 100, 80);
                 
                 //myDataRef.set(info1);
                 if (db)
@@ -149,12 +155,6 @@
             }
             
             function drawPaddle(angle) {
-                // ctx.beginPath();
-                // ctx.rect(paddleX, canvas.height-paddleHeight, paddleWidth, paddleHeight);
-                // ctx.fillStyle = "#0095DD";
-                // ctx.fill();
-                // ctx.closePath();
-                
                 var a = paddleWidth/2 * Math.cos(angle);
                 var b = paddleWidth/2 * Math.sin(angle);
                 var a1 = paddleWidth/2 - a;
@@ -272,10 +272,67 @@
                         }
                     }
                 }
-                
-                //odraz na horní straně
-                if ((y + dy < ballRadius + paddleHeight) && (x > paddle2X && x < paddle2X + paddleWidth)) {
 
+                rameno = x - (paddleX + paddleWidth/2);
+                var a = paddleWidth/2 * Math.cos(toRad(angle1));
+                offsetX = paddleWidth/2 - a;
+                
+                if (angle1>0) 
+                {
+                    if (rameno > 0)
+                    {
+                        offsetY = Math.abs(rameno * Math.sin(toRad(angle1)));        
+                    }
+                    else
+                    {
+                        offsetY = -Math.abs(rameno * Math.sin(toRad(angle1)));        
+                    }
+                }
+                else
+                {
+                    if (rameno > 0)
+                    {
+                        offsetY = -Math.abs(rameno * Math.sin(toRad(angle1)));        
+                    }
+                    else
+                    {
+                        offsetY = Math.abs(rameno * Math.sin(toRad(angle1)));        
+                    }
+                }
+                
+                
+                rameno2 = x - (paddle2X + paddleWidth/2);
+                var a2 = paddleWidth/2 * Math.cos(toRad(angle2));
+                offsetX2 = paddleWidth/2 - a2;
+                
+                if (angle2>0) 
+                {
+                    if (rameno2 > 0)
+                    {
+                        offsetY2 = -Math.abs(rameno2 * Math.sin(toRad(angle2)));        
+                    }
+                    else
+                    {
+                        offsetY2 = Math.abs(rameno2 * Math.sin(toRad(angle2)));        
+                    }
+                }
+                else
+                {
+                    if (rameno2 > 0)
+                    {
+                        offsetY2 = Math.abs(rameno2 * Math.sin(toRad(angle2)));        
+                    }
+                    else
+                    {
+                        offsetY2 = -Math.abs(rameno2 * Math.sin(toRad(angle2)));        
+                    }
+                }
+                
+
+                //odraz na horní straně
+                if ((y + dy < ballRadius + paddleDistance + offsetY2) &&
+                    (x > paddle2X + offsetX2 && x < paddle2X + paddleWidth - offsetX2))
+                {
                     if (dx > 0)
                     {
                         uhelDopadu = Math.abs(Math.atan(dy/dx)*180/Math.PI);    
@@ -289,23 +346,20 @@
                         uhelDopadu = 90;
                     }
                     
-                    // uhelOdrazu = 180 - uhelDopadu + angle2;
-                    
-                    // dx = dy / Math.tan(toRad(uhelOdrazu));
-                    
-                    
-                    // dy = -dy;
-                    
                     hitBallByUpperPaddle(angle2, uhelDopadu);
                     
-                    increaseSpeed();
+                    if (whoHitTheBall == 1)
+                    {
+                        increaseSpeed();
+                    }
                     
                     whoHitTheBall = 2;
                     
                     drawInfo(true);
                 }
                 //horní pálka tam není
-                else if (y + dy < ballRadius) { 
+                else if (y + dy < ballRadius)
+                { 
                     bottomPlayerScored();
                     
                     if (scoreBottomPlayer == 3)
@@ -316,9 +370,10 @@
                 }
                 
                 //odraz na spodní straně
-                else if ((y + dy > canvas.height - ballRadius - paddleHeight) && (x > paddleX && x < paddleX + paddleWidth))
+                else if 
+                    ((y + dy > canvas.height - ballRadius - paddleDistance - offsetY) &&// míček dorazil ke spodní hraně
+                    (x > paddleX + offsetX && x < paddleX + paddleWidth - offsetX)) //je tam nastavená pálka
                 {
-                    
                     if (dx < 0)
                     {
                         uhelDopadu = Math.abs(Math.atan(dy/dx)*180/Math.PI);    
@@ -334,7 +389,10 @@
                     
                     hitBallByBottomPaddle(angle1, uhelDopadu);
                     
-                    increaseSpeed();
+                    if (whoHitTheBall == 2)
+                    {
+                        increaseSpeed();
+                    }
                     
                     whoHitTheBall = 1;
                     
@@ -410,11 +468,6 @@
 
                 var pomer_dydx = 1/Math.tan(radiany);
                 
-                //dx = speed / (1+pomer_dydx);
-                //dx = 1 / (pomer_dydx);
-                //dy = dx * pomer_dydx;
-                
-                //dx = pomer_dydx * dy;
                 dx = Math.sqrt(Math.pow(speed,2) / (1 + Math.pow(Math.tan(radiany),2)));
                 dy = dx * Math.tan(radiany);
 
@@ -427,9 +480,6 @@
                 {   
                     dy = -dy;
                 }
-                
-                //dx *= speed;
-                //dy *= speed;
             }
             
             function hitBallByUpperPaddle(uhelPalky, uhelDopadu1)
@@ -444,10 +494,8 @@
                 
                 //alert("pomer_dydx " + pomer_dydx);
                 
-                //dx = pomer_dydx * dy;
                 dx = Math.sqrt(Math.pow(speed,2) / (1 + Math.pow(Math.tan(radiany),2)));
                 dy = dx * Math.tan(radiany);
-                
 
                 if (uhelOdrazu > 90)
                 {
@@ -463,53 +511,33 @@
                 }
 
                 dy = Math.abs(dy);
-                
-                //alert(dx + "  " + dy);
-                //dx *= speed;
-                //dy *= speed;
             }
             
             function upperPlayerScored()
             {
+                //clearInterval(interval);
                 scoreUpperPlayer++;
                 x = canvas.width/2; //nastavení startovní souřadnice x míčku
-                y = canvas.height-30; //nastavení startovní souřadnice y míčku
+                y = canvas.height-paddleDistance*2; //nastavení startovní souřadnice y míčku
                 speed = speedControl;
                 dx = -1; //nastavení rychlosti míčku po ose x
                 dy = -1; //nastavení rychlosti míčku po ose y
                 whoHitTheBall = 1;
+                //interval = setInterval(draw, 10);
             }
             
             function bottomPlayerScored()
             {
+                //clearInterval(interval);
                 scoreBottomPlayer++;
                 x = canvas.width/2; //nastavení startovní souřadnice x míčku
-                y = 30; //nastavení startovní souřadnice y míčku
+                y = paddleDistance*2; //nastavení startovní souřadnice y míčku
                 speed = speedControl;
                 dx = 1; //nastavení rychlosti míčku po ose x
                 dy = 1; //nastavení rychlosti míčku po ose y
                 whoHitTheBall = 2;
+                //interval = setInterval(draw, 10);
             }
-            
-            // function increaseSpeed()
-            // {
-            //     if (dy > 0)
-            //     {
-            //         dy *= speed;
-            //     }
-            //     else
-            //     {
-            //         dy *= speed;
-            //     }
-            //     if (dx > 0)
-            //     {
-            //         dx *= speed;
-            //     }
-            //     else
-            //     {
-            //         dx *= speed;
-            //     }
-            // }
             
             function increaseSpeed()
             {
