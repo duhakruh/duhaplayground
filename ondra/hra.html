@@ -25,19 +25,22 @@
     var dx = -1; //nastavení rychlosti míčku po ose x 
     var dy = -1; //nastavení rychlosti míčku po ose y 
     var ballRadius = 10; //deklarace proměnné pro poloměr míčku
-    
+    var speedStart = 1;
+    var speed = speedStart;
     var paddleHeight = 20; //výška pálky
-    var paddleWidth = 75; //šířka pálky
+    var paddleWidth = 150; //šířka pálky
     var paddleX = (canvas.width-paddleWidth)/2; //počáteční poloha pálky na ose X
     var paddleX2 = (canvas.width-paddleWidth)/2; //počáteční poloha 2. pálky na ose X
-    
+    var scoreDolni = 0;
+    var scoreHorni = 0;
+    var pocetOdrazy = 0;
     var rightPressed = false; //výchozí stav klávesy pravé šipka 
     var leftPressed = false; //výchozí stav klávesy levá šipka
     var aPressed = false;//výchozí stav klávesy A
     var dPressed = false;//výchozí stav klávesy D
     var downPressed = false;//výchozí stav klávesy Dolů
     var upPressed = false;//výchozí stav klávesy nahórů
-    var c=document.getElementById("myCanvas");
+//    var c=document.getElementById("myCanvas");
     var angle1 = 0;
     var angle2 = 0;
     
@@ -89,6 +92,9 @@
         ctx.fill();
         ctx.closePath();
     }
+    function zvysRychlost(){
+        speed += 0.5;
+    }
     function draw() {
         ctx.clearRect(0, 0, canvas.width, canvas.height); //vyčisti plátno
         drawBall(); //nakresli míček
@@ -108,7 +114,8 @@
         //odraz od dolní pálky
         else if ((y + dy > canvas.height - ballRadius - paddleHeight) && (x > paddleX && x < paddleX + paddleWidth))
         {
-        
+            zvysRychlost();
+            pocetOdrazy++;
             //normální odraz
             dy = -dy;
         }
@@ -122,6 +129,7 @@
         //odraz od horní pálky
         if ((y + dy < ballRadius + paddleHeight) && (x > paddleX2 && x < paddleX2 + paddleWidth))
         {
+            pocetOdrazy++;
         
             //normální odraz
             dy = -dy;
@@ -136,8 +144,8 @@
        
         
         //změň souřadnice  míčku x, y
-        x += dx; //změň souřadnice x míčku
-        y += dy; //změň souřadnice y míčku
+        x += dx * speed; //změň souřadnice x míčku
+        y += dy * speed; //změň souřadnice y míčku
         
         
         //změň souřadnici x pálky
